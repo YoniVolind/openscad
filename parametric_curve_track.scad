@@ -330,9 +330,17 @@ module at_path(s) {
             children();
     } else {
         theta = s / track_radius * 180 / PI;
+
+        // Center the curved segment around the OpenSCAD origin.
+        // This keeps large-radius curves visible instead of placing them
+        // hundreds of millimeters away from the camera target.
+        mid_theta = track_angle/2;
+        mid_x = track_radius*cos(mid_theta);
+        mid_y = track_radius*sin(mid_theta);
+
         translate([
-            track_radius*cos(theta),
-            track_radius*sin(theta),
+            track_radius*cos(theta) - mid_x,
+            track_radius*sin(theta) - mid_y,
             0
         ])
             rotate([0,0,theta+90])
@@ -587,9 +595,18 @@ module straight_rail(yc) {
 }
 
 module curved_rail(radius) {
-    rotate_extrude(angle=track_angle,convexity=12,$fn=max(64,ceil(track_angle*4)))
-        translate([radius,rail_base_z])
-            rail_profile_2d();
+    mid_theta = track_angle/2;
+    mid_x = track_radius*cos(mid_theta);
+    mid_y = track_radius*sin(mid_theta);
+
+    translate([-mid_x,-mid_y,0])
+        rotate_extrude(
+            angle=track_angle,
+            convexity=12,
+            $fn=max(96,ceil(track_angle*6))
+        )
+            translate([radius,rail_base_z])
+                rail_profile_2d();
 }
 
 module rails() {
@@ -660,4 +677,4 @@ echo("track_radius =",track_radius);
 echo("track_angle =",track_angle);
 echo("path_length_mm =",path_length);
 echo("sleeper_count =",sleeper_count);
-echo("actual_sleeper_spacing_mm =",actual_sleeper_spacing);
+echo("actual_sleeper_spacing_mm =",actual_sleeper_spacing);\necho("curve_centered_at_origin =",curve_mode);
