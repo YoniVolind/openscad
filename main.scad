@@ -77,13 +77,13 @@ module grain_groove(seed, base_x) {
         x2 = base_x + 0.28*sin(seed*37 + (i+1)*61);
 
         hull() {
-            translate([x1, y1, sleeper_height - wood_grain_depth/2])
+            translate([x1, y1, sleeper_height/2 - wood_grain_depth/2])
                 cylinder(h = wood_grain_depth + 0.12,
                          d = wood_grain_width,
                          center = true,
                          $fn = 16);
 
-            translate([x2, y2, sleeper_height - wood_grain_depth/2])
+            translate([x2, y2, sleeper_height/2 - wood_grain_depth/2])
                 cylinder(h = wood_grain_depth + 0.12,
                          d = wood_grain_width,
                          center = true,
@@ -98,7 +98,7 @@ module wood_knots(seed) {
         translate([
             1.2*sin(seed*43),
             11*sin(seed*29),
-            sleeper_height - wood_knot_depth/2
+            sleeper_height/2 - wood_knot_depth/2
         ])
             scale([1.45, 0.72, 1])
                 cylinder(h = wood_knot_depth + 0.12,
@@ -109,7 +109,7 @@ module wood_knots(seed) {
         translate([
             1.2*sin(seed*43),
             11*sin(seed*29),
-            sleeper_height - wood_knot_depth/2
+            sleeper_height/2 - wood_knot_depth/2
         ])
             scale([2.1, 1.05, 1])
                 difference() {
