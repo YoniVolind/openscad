@@ -1,6 +1,6 @@
 // 100 mm realistic straight train track
 // LEGO train ecosystem dimensions.
-// End connectors are dimensionally extracted from the uploaded compatible STL:
+// All sleepers are 8 x 56 x 3.2 mm with equal center spacing.\n// End connectors are dimensionally extracted from the uploaded compatible STL:
 // Rovna+032mm.stl. The horizontal connector/end-beam profile differs from
 // that source by less than 0.01 mm (profile simplification tolerance).
 //
@@ -16,7 +16,7 @@ running_gauge = 37.5;        // between inner rail-head faces
 sleeper_count = 8;           // includes two end sleepers
 sleeper_width = 8;           // along track
 sleeper_length = 56;         // across track for internal sleepers
-end_sleeper_length = 64;     // source-compatible end profile width
+end_sleeper_length = sleeper_length; // all sleepers are the same 56 mm length
 sleeper_height = 3.2;
 
 // rail top = 9.6 mm, matching LEGO track height
@@ -379,9 +379,18 @@ module timber_sleeper(seed) {
 // The mating connector geometry x<0 remains untouched to preserve fit.
 module source_end_local(seed) {
     difference() {
+        // The source connector geometry is unchanged around the two mating
+        // features. Only the plain outer ends of the beam are clipped from
+        // 64 mm to 56 mm so every sleeper has the same dimensions.
         linear_extrude(height=sleeper_height)
-            polygon(points=lego_end_profile);
+            intersection() {
+                polygon(points=lego_end_profile);
+                translate([-4.1,-end_sleeper_length/2])
+                    square([12.3,end_sleeper_length]);
+            }
 
+        // Random wood texture is applied only to the timber body x=0..8.
+        // The mating connector surfaces at x<0 stay dimensionally untouched.
         intersection() {
             translate([4,0,sleeper_height/2])
                 wood_cutters(seed,8,end_sleeper_length,sleeper_height,false);
@@ -439,18 +448,23 @@ module sleepers() {
     end_sleeper(-1,101);
     end_sleeper( 1,208);
 
-    inner=sleeper_count-2;
-    for(i=[1:inner]) {
-        x=-track_length/2+8+i*((track_length-16)/(inner+1));
+    // All 8 sleeper centers use exactly the same spacing.
+    // End sleeper centers are at +/-46 mm:
+    // (100 mm track length - 8 mm sleeper width) / 7 = 13.142857 mm.
+    sleeper_spacing=(track_length-sleeper_width)/(sleeper_count-1);
+
+    for(i=[1:sleeper_count-2]) {
+        x=-track_length/2+sleeper_width/2+i*sleeper_spacing;
         translate([x,0,sleeper_height/2])
             timber_sleeper(300+i*47);
     }
 }
 
 module hardware() {
-    inner=sleeper_count-2;
-    for(i=[1:inner]) {
-        x=-track_length/2+8+i*((track_length-16)/(inner+1));
+    sleeper_spacing=(track_length-sleeper_width)/(sleeper_count-1);
+
+    for(i=[1:sleeper_count-2]) {
+        x=-track_length/2+sleeper_width/2+i*sleeper_spacing;
         for(y=[-rail_center_gauge/2,rail_center_gauge/2]) {
             tie_plate(x,y);
             rail_clip(x,y,-1);
