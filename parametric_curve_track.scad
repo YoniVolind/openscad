@@ -677,4 +677,5 @@ echo("track_radius =",track_radius);
 echo("track_angle =",track_angle);
 echo("path_length_mm =",path_length);
 echo("sleeper_count =",sleeper_count);
-echo("actual_sleeper_spacing_mm =",actual_sleeper_spacing);\necho("curve_centered_at_origin =",curve_mode);
+echo("actual_sleeper_spacing_mm =",actual_sleeper_spacing);
+echo("curve_centered_at_origin =",curve_mode);
