@@ -13,10 +13,11 @@ pillow_height = 5.0;
 
 corner_radius = 2.0;
 
-// Star dimensions
-star_outer_radius = 3.0;
-star_line_width   = 0.65;
-star_height       = 0.55;
+// Raised name dimensions
+name_text = "Yochai";
+name_size = 3.2;
+name_height = 0.55;
+name_font = "Arial:style=Bold";
 
 // ========================
 // Rounded 2D rectangle
@@ -78,38 +79,22 @@ module pillow_body() {
 }
 
 // ========================
-// Star of David
+// Raised name
 // ========================
-function triangle_points(r, rotation = 0) = [
-    for (a = [90 + rotation, 210 + rotation, 330 + rotation])
-        [r*cos(a), r*sin(a)]
-];
-
-module triangle_outline(r, line_w) {
-    difference() {
-        polygon(points = triangle_points(r));
-        offset(delta = -line_w)
-            polygon(points = triangle_points(r));
-    }
-}
-
-module star_of_david_2d(r, line_w) {
-    union() {
-        triangle_outline(r, line_w);
-
-        rotate(180)
-            triangle_outline(r, line_w);
-    }
-}
-
-module star_of_david() {
+module raised_name() {
     translate([
         0,
         0,
         pillow_height/2 - 0.18
     ])
-        linear_extrude(height = star_height)
-            star_of_david_2d(star_outer_radius, star_line_width);
+        linear_extrude(height = name_height)
+            text(
+                name_text,
+                size = name_size,
+                font = name_font,
+                halign = "center",
+                valign = "center"
+            );
 }
 
 // ========================
@@ -120,5 +105,5 @@ union() {
         pillow_body();
 
     color([0.15, 0.25, 0.65])
-        star_of_david();
+        raised_name();
 }
